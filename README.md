@@ -4,7 +4,7 @@ My solutions of the Christmas-themed algorithmic coding puzzles. My journey star
 ## 2015
 | Mon  | Tue  | Wed  | Thu  | Fri  | Sat  | Sun  |
 |:----:|:----:|:----:|:----:|:----:|:----:|:----:|
-||||||||
+||[✔](https://github.com/AlejandroSanchezCano/AdventOfCode/tree/main/2015/1/1.py) [✔](https://github.com/AlejandroSanchezCano/AdventOfCode/tree/main/2015/1/2.py)||||||
 ||||||||
 ||||||||
 ||||||||
