@@ -31,4 +31,5 @@ for string in strings:
         requirement_substrings
         )
     valid += all(requirements)
+    
 print(valid)
