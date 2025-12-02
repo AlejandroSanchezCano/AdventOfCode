@@ -1,12 +1,12 @@
 '''
 --- Day 7.1: Some Assembly Required ---
-
+Sort the instructions based on their input so that no connection involves an
+cable with an uncalculated value. Then, implement bitwise operations based on
+the described operators.
 '''
 
 with open(__file__.rsplit("/", 1)[0] + "/input.txt") as f:
     instructions = f.read().splitlines()
-
-cables = {}
 
 class Instruction:
 
@@ -25,42 +25,41 @@ class Instruction:
             self.second_input = None
         else:
             self.operator = split[1]
-            self.main_input = split[0]
-            self.second_input = split[2]
+            self.main_input = split[0] if not split[0].isdigit() else int(split[0])
+            self.second_input = split[2] if not split[2].isdigit() else int(split[2])
 
     def __repr__(self):
         return self.instruction
 
     @staticmethod
-    def __compare(cable1, cable2):
-        if len(cable1) != len(cable2):
-            return len(cable1) < len(cable2)
-        return cable1 < cable2
-
-    #def __lt__(self, other):
-    #    if self.operator is None: return self.output != 'a'
-    #    if other.operator is None: return other.output == 'a'
-    #    if self.second_input is None or 'SHIFT' in self.operator:
-    #        return self.__compare(self.main_input, other.output)
-    #    if other.second_input is None or 'SHIFT' in self.operator:
-    #        return self.__compare(self.output, other.main_input)
-    #    return self.__compare(self.main_input, other.output) \
-    #        and self.__compare(self.second_input, other.output)
+    def __key(x):
+        '''
+        Ranking:
+        1) None
+        2) Integers
+        3) 1-letter strings
+        4) The rest
+        '''
+        if x is None: return (0, '')
+        if isinstance(x, int): return (1, x)
+        if len(x) == 1: return (2, x)
+        return (3, x)
 
     def __lt__(self, other):
+        # Simple connection
         if self.operator is None: return self.output != 'a'
         if other.operator is None: return other.output == 'a'
-        if self.second_input is None or 'SHIFT' in self.operator:
-            if self.main_input == other.output: return False
-            return self.__compare(self.main_input, other.output)
-        if other.second_input is None or 'SHIFT' in self.operator:
-            if self.output == other.main_input: return True
-            return self.__compare(self.output, other.main_input)
-        return self.__compare(self.main_input, other.output) \
-            and self.__compare(self.second_input, other.output)    
+        # Bitwise operations
+        input_data = [
+            self.main_input, self.second_input, 
+            other.main_input, other.second_input
+            ]
+        sorted_input = sorted(input_data, key = self.__key) 
+        return sorted_input[-1] in (other.main_input, other.second_input)
+
     def connect(self):
         if self.operator is None:
-            cables[self.output] = self.main_input
+            cables[self.output] = self.main_input if self.output != 'a' else cables[self.main_input]
         elif self.operator == 'NOT':
             cables[self.output] = 2**16 + ~cables[self.main_input]
         elif self.operator == 'RSHIFT':
@@ -74,13 +73,10 @@ class Instruction:
                 cables[self.output] = value1 & value2
             elif self.operator == 'OR':
                 cables[self.output] = value1 | value2
-                
-
+            
+cables = {}
 instructions = [Instruction(instruction) for instruction in instructions]
-for i in sorted(instructions):
-    print(i)
-#dsfdsf
-#for i in sorted(instructions):
-#    print(i)
-#    i.connect()
-#    #print(cables)
+for instruction in sorted(instructions):
+    instruction.connect()
+
+print(cables['a'])
