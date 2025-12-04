@@ -1,26 +1,20 @@
 '''
 --- Day 18.1: Like a GIF For Your Yard ---
-Game of life
+Conway's game of life where iterations are implemented using convolutions.
 '''
-import utils
+
+import scipy
 import numpy as np
 
 with open(__file__.rsplit("/", 1)[0] + "/input.txt") as f:
-    lights = [list(line.strip()) for line in f.readlines()]
+    lights = np.array([list(line.strip()) for line in f.readlines()])
 
-grid = utils.Grid(np.array(lights))
-
-@np.vectorize
-def switch(r, c):
-    if grid.is_corner((r, c)): return '#'
-    on = sum([grid(neighbor) == '#' for neighbor in grid.around(r, c)])
-    if grid(r, c) == '#':
-        return '#' if on in (2, 3) else '.'
-    else:
-        return '#' if on == 3 else '.'
-
-I, J = np.indices(grid.grid.shape)
-print(grid.grid)
+grid = lights == '#'
+kernel = np.array([[1, 1, 1], [1, 0, 1], [1, 1, 1]])
 for _ in range(100):
-    grid.grid = switch(I, J)
-print((grid.grid == '#').sum())
+    conv = scipy.signal.convolve2d(grid, kernel, mode='same')
+    birth = (conv == 3) & ~grid
+    survive = ((conv == 2) | (conv == 3)) & grid
+    grid = birth | survive
+
+print(grid.sum())
