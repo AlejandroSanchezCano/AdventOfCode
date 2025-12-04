@@ -7,6 +7,8 @@ presents. For that we need a very efficient way of computing divisors, so we
 use something similar to the sieve of Eratosthenes, used to calculate prime 
 numbers. It is essentially bottom-up dynamic programming (tabulation) => each 
 number will be a divisor of itself, itself * 2, itself * 3, and so on.
+This strategy is O(n log n), much faster than O(n^2) by double iteration, or
+O(n sqrt n) by prime factorization.
 '''
 
 minimum = 33100000
